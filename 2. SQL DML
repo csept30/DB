@@ -1,0 +1,85 @@
+[2] Design and develop below database and execute following SQL DML statements using MySQL .
+emp (eno, ename, bdate, title, salary, dno)
+proj (pno, pname, budget, dno)
+dept (dno, dname, mgreno)
+workson (eno, pno, hours)
+1) Write an SQL query that returns the project number and name for projects with a budget greater than
+$100,000.
+2) Write an SQL query that returns the employees (number and name only) who have a title of &#39;EE&#39; or &#39;SA&#39; and
+salary more than $35,000.
+3) Write an SQL query that returns the employees (name only) in department &#39;D1&#39; ordered by decreasing
+salary.
+4) Write an SQL query that returns the departments (all fields) ordered by ascending department name.
+5) Write an SQL query that returns the employee name, department name, and employee title.
+
+
+-- Create tables
+CREATE TABLE emp (
+    eno INT PRIMARY KEY,
+    ename VARCHAR(255),
+    bdate DATE,
+    title VARCHAR(255),
+    salary DECIMAL(10,2),
+    dno VARCHAR(255)
+);
+
+CREATE TABLE proj (
+    pno INT PRIMARY KEY,
+    pname VARCHAR(255),
+    budget DECIMAL(10,2),
+    dno VARCHAR(255)
+);
+
+CREATE TABLE dept (
+    dno VARCHAR(255) PRIMARY KEY,
+    dname VARCHAR(255),
+    mgreno INT
+);
+
+CREATE TABLE workson (
+    eno INT,
+    pno INT,
+    hours INT,
+    PRIMARY KEY (eno, pno),
+    FOREIGN KEY (eno) REFERENCES emp(eno),
+    FOREIGN KEY (pno) REFERENCES proj(pno)
+);
+
+-- Insert sample data
+INSERT INTO emp VALUES (1, 'John Doe', '1990-01-01', 'EE', 40000.00, 'D1');
+INSERT INTO emp VALUES (2, 'Jane Smith', '1995-02-15', 'SA', 45000.00, 'D2');
+
+INSERT INTO proj VALUES (1, 'Project A', 120000.00, 'D1');
+INSERT INTO proj VALUES (2, 'Project B', 80000.00, 'D2');
+
+INSERT INTO dept VALUES ('D1', 'Department 1', 1);
+INSERT INTO dept VALUES ('D2', 'Department 2', 2);
+
+INSERT INTO workson VALUES (1, 1, 40);
+INSERT INTO workson VALUES (2, 2, 35);
+
+-- Query 1: Projects with budget greater than $100,000
+SELECT pno, pname 
+FROM proj 
+WHERE budget > 100000;
+
+-- Query 2: Employees with title 'EE' or 'SA' and salary > $35,000
+SELECT eno, ename 
+FROM emp 
+WHERE title IN ('EE', 'SA') AND salary > 35000;
+
+-- Query 3: Employees in department 'D1' ordered by decreasing salary
+SELECT ename 
+FROM emp 
+WHERE dno = 'D1' 
+ORDER BY salary DESC;
+
+-- Query 4: Departments ordered by ascending department name
+SELECT * 
+FROM dept 
+ORDER BY dname ASC;
+
+-- Query 5: Employee name, department name, and employee title
+SELECT emp.ename, dept.dname, emp.title 
+FROM emp 
+INNER JOIN dept ON emp.dno = dept.dno;
