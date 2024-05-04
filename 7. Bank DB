@@ -1,0 +1,94 @@
+[7] Consider the following Bank DB schema.
+Deposit(accountno, cname, amount, acctdate,bname)
+Branch(bname,city)
+Customer(cname,city)
+Borrow(loanno, cname, bname,amount)
+Write the following Mysql queries.
+1. List all data from borrow table.
+2. Get customer names who has deposit greater than 1000 and name like “A”. 3. Display
+name of customer with amount in descending order.
+4. List total loan.
+5. List branchname and branch wise deposit.
+6. Select the branches having sum of deposit more than 4000.
+
+-- Create Deposit table
+CREATE TABLE Deposit (
+    accountno INT PRIMARY KEY,
+    cname VARCHAR(255),
+    amount DECIMAL(10,2),
+    acctdate DATE,
+    bname VARCHAR(255),
+    FOREIGN KEY (bname) REFERENCES Branch(bname)
+);
+
+-- Create Branch table
+CREATE TABLE Branch (
+    bname VARCHAR(255) PRIMARY KEY,
+    city VARCHAR(255)
+);
+
+-- Create Customer table
+CREATE TABLE Customer (
+    cname VARCHAR(255) PRIMARY KEY,
+    city VARCHAR(255)
+);
+
+-- Create Borrow table
+CREATE TABLE Borrow (
+    loanno INT PRIMARY KEY,
+    cname VARCHAR(255),
+    bname VARCHAR(255),
+    amount DECIMAL(10,2),
+    FOREIGN KEY (cname) REFERENCES Customer(cname),
+    FOREIGN KEY (bname) REFERENCES Branch(bname)
+);
+
+-- Insert sample data into Branch table
+INSERT INTO Branch (bname, city)
+VALUES
+    ('Branch1', 'City1'),
+    ('Branch2', 'City2');
+
+-- Insert sample data into Customer table
+INSERT INTO Customer (cname, city)
+VALUES
+    ('Customer1', 'City1'),
+    ('Customer2', 'City2');
+
+-- Insert sample data into Deposit table
+INSERT INTO Deposit (accountno, cname, amount, acctdate, bname)
+VALUES
+    (1, 'Customer1', 1500.00, '2023-01-01', 'Branch1'),
+    (2, 'Customer2', 2000.00, '2023-01-02', 'Branch2');
+
+-- Insert sample data into Borrow table
+INSERT INTO Borrow (loanno, cname, bname, amount)
+VALUES
+    (101, 'Customer1', 'Branch1', 5000.00),
+    (102, 'Customer2', 'Branch2', 3000.00);
+
+-- 1. List all data from borrow table.
+SELECT * FROM Borrow;
+
+-- 2. Get customer names who have deposits greater than 1000 and names like "A".
+SELECT cname FROM Deposit WHERE amount > 1000 AND cname LIKE 'A%';
+
+-- 3. Display name of customers with amount in descending order.
+SELECT cname, amount FROM Deposit ORDER BY amount DESC;
+
+-- 4. List total loan.
+SELECT SUM(amount) AS total_loan FROM Borrow;
+
+-- 5. List branchname and branch wise deposit.
+SELECT Deposit.bname, SUM(Deposit.amount) AS total_deposit
+FROM Deposit
+GROUP BY Deposit.bname;
+
+-- 6. Select the branches having sum of deposit more than 4000.
+SELECT bname
+FROM (
+    SELECT bname, SUM(amount) AS total_deposit
+    FROM Deposit
+    GROUP BY bname
+) AS branch_deposit
+WHERE total_deposit > 4000;
