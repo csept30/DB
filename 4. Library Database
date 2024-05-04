@@ -1,0 +1,57 @@
+[4]Consider the following Relations. It defines Library Database Schema BOOK (Book_ISBN
+[PK], Title[Not Null], Publisher_ Name, Price[Check Price&gt;0], Date_Of_Publication(Default
+SYSDATE), Book_Copy)
+BOOK_AUTHORS (Book_ISBN ,Author_Name [PK],Author_City[Default “Pune‟],
+Phone[UNIQUE])
+Design and Develop SQL DML statements for above database using MySQL 1. Create tables for above
+database with all constraints and Insert at least five records in each table. 2. Add field Author_email to
+BOOK_AUTHORS table.
+3.Create a view on Book table as “DBMS BOOKS” by selecting all books titled DBMS. 4.Drop the
+view “DBMS BOOKS” just created
+
+
+-- Create BOOK table
+CREATE TABLE BOOK (
+    Book_ISBN INT PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Publisher_Name VARCHAR(255),
+    Price DECIMAL(10,2) CHECK (Price > 0),
+    Date_Of_Publication DATE DEFAULT CURRENT_DATE,
+    Book_Copy INT
+);
+
+-- Create BOOK_AUTHORS table
+CREATE TABLE BOOK_AUTHORS (
+    Book_ISBN INT,
+    Author_Name VARCHAR(255),
+    Author_City VARCHAR(255) DEFAULT 'Pune',
+    Phone VARCHAR(20) UNIQUE,
+    PRIMARY KEY (Book_ISBN, Author_Name)
+);
+
+-- Insert records into BOOK table
+INSERT INTO BOOK (Book_ISBN, Title, Publisher_Name, Price, Book_Copy)
+VALUES
+    (1, 'Book1', 'Publisher1', 10.99, 100),
+    (2, 'Book2', 'Publisher2', 15.99, 150),
+    (3, 'Book3', 'Publisher3', 20.99, 200),
+    (4, 'Book4', 'Publisher4', 25.99, 250),
+    (5, 'Book5', 'Publisher5', 30.99, 300);
+
+-- Insert records into BOOK_AUTHORS table
+INSERT INTO BOOK_AUTHORS (Book_ISBN, Author_Name, Phone)
+VALUES
+    (1, 'Author1', '123-456-7890'),
+    (2, 'Author2', '234-567-8901'),
+    (3, 'Author3', '345-678-9012'),
+    (4, 'Author4', '456-789-0123'),
+    (5, 'Author5', '567-890-1234');
+
+ALTER TABLE BOOK_AUTHORS
+ADD COLUMN Author_email VARCHAR(255);
+
+CREATE VIEW `DBMS_BOOKS` AS
+SELECT * FROM BOOK WHERE Title LIKE 'DBMS%';
+
+
+DROP VIEW IF EXISTS `DBMS_BOOKS`;
