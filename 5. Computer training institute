@@ -1,0 +1,109 @@
+[5] Consider following Computer training institute database schema with following information.
+Course(coursecode, coursename, syllabus)
+Batch(batchcode, coursecode, startingdate, duration, coursefees, netincome, expectedincome)
+Enquiry(enquirynumber, fname, lname, coursecode, plotno, street, city, phone, enquirydate,
+enquirystatus)
+Enrollment(rollno, enquirynumber, batchcode, enrollmentdate) Write following Mysql queries: 1. Display
+the contents of batch for particular course having coursecode=10 2. Display the batchcode of batch having
+expectedincome more than netincome by 2000 3. Display the coursename, startingdate of all batches
+4. Find out coursename with coursefees greater than 50000
+5. Display the details of batch having a specified coursename.
+6. Find out the number of persons whose name starts with „S‟.
+7. Delete all rows from enquiry for a specified coursename.
+
+-- Create Course table
+CREATE TABLE Course (
+    coursecode INT PRIMARY KEY,
+    coursename VARCHAR(255),
+    syllabus TEXT
+);
+
+-- Create Batch table
+CREATE TABLE Batch (
+    batchcode INT PRIMARY KEY,
+    coursecode INT,
+    startingdate DATE,
+    duration INT,
+    coursefees DECIMAL(10,2),
+    netincome DECIMAL(10,2),
+    expectedincome DECIMAL(10,2),
+    FOREIGN KEY (coursecode) REFERENCES Course(coursecode)
+);
+
+-- Create Enquiry table
+CREATE TABLE Enquiry (
+    enquirynumber INT PRIMARY KEY,
+    fname VARCHAR(255),
+    lname VARCHAR(255),
+    coursecode INT,
+    plotno VARCHAR(255),
+    street VARCHAR(255),
+    city VARCHAR(255),
+    phone VARCHAR(255),
+    enquirydate DATE,
+    enquirystatus VARCHAR(255),
+    FOREIGN KEY (coursecode) REFERENCES Course(coursecode)
+);
+
+-- Create Enrollment table
+CREATE TABLE Enrollment (
+    rollno INT PRIMARY KEY,
+    enquirynumber INT,
+    batchcode INT,
+    enrollmentdate DATE,
+    FOREIGN KEY (enquirynumber) REFERENCES Enquiry(enquirynumber),
+    FOREIGN KEY (batchcode) REFERENCES Batch(batchcode)
+);
+
+-- Insert sample data into Course table
+INSERT INTO Course (coursecode, coursename, syllabus)
+VALUES 
+    (10, 'Web Development', 'HTML, CSS, JavaScript'),
+    (20, 'Data Science', 'Python, R, Machine Learning');
+
+-- Insert sample data into Batch table
+INSERT INTO Batch (batchcode, coursecode, startingdate, duration, coursefees, netincome, expectedincome)
+VALUES
+    (1, 10, '2023-01-15', 3, 5000.00, 3000.00, 8000.00),
+    (2, 20, '2023-02-10', 6, 8000.00, 6000.00, 10000.00);
+
+-- Insert sample data into Enquiry table
+INSERT INTO Enquiry (enquirynumber, fname, lname, coursecode, plotno, street, city, phone, enquirydate, enquirystatus)
+VALUES
+    (1, 'John', 'Doe', 10, '123', 'Main Street', 'New York', '123-456-7890', '2023-01-01', 'Interested'),
+    (2, 'Jane', 'Smith', 20, '456', 'Broadway', 'Los Angeles', '456-789-0123', '2023-01-05', 'Interested');
+
+-- Insert sample data into Enrollment table
+INSERT INTO Enrollment (rollno, enquirynumber, batchcode, enrollmentdate)
+VALUES
+    (101, 1, 1, '2023-01-20'),
+    (102, 2, 2, '2023-01-25');
+
+-- 1. Display the contents of batch for a particular course having coursecode = 10
+SELECT * FROM Batch WHERE coursecode = 10;
+
+-- 2. Display the batchcode of batches having expectedincome more than netincome by 2000
+SELECT batchcode FROM Batch WHERE expectedincome - netincome > 2000;
+
+-- 3. Display the coursename and startingdate of all batches
+SELECT Course.coursename, Batch.startingdate
+FROM Course
+INNER JOIN Batch ON Course.coursecode = Batch.coursecode;
+
+-- 4. Find out coursename with coursefees greater than 50000
+SELECT coursename FROM Course WHERE coursefees > 50000;
+
+-- 5. Display the details of batch having a specified coursename
+SELECT Batch.*
+FROM Batch
+INNER JOIN Course ON Batch.coursecode = Course.coursecode
+WHERE Course.coursename = 'Web Development';
+
+-- 6. Find out the number of persons whose name starts with 'S'
+SELECT COUNT(*) AS person_count
+FROM Enquiry
+WHERE fname LIKE 'S%';
+
+-- 7. Delete all rows from enquiry for a specified coursename
+DELETE FROM Enquiry
+WHERE coursecode = (SELECT coursecode FROM Course WHERE coursename = 'Data Science');
