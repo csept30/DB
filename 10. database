@@ -1,0 +1,72 @@
+[10] A database consists of following tables.
+PROJECT(PNO, PNAME, CHIEF)
+EMPLOYEE(EMPNO, EMPNAME)
+ASSIGNED(PNO,EMPNO)
+A. Get count of employees working on project.
+B. Get details of employee working on project pr002.
+C. Get details of employee working on project DBMS.
+
+-- Create PROJECT table
+CREATE TABLE PROJECT (
+    PNO VARCHAR(10) PRIMARY KEY,
+    PNAME VARCHAR(255),
+    CHIEF VARCHAR(255)
+);
+
+-- Create EMPLOYEE table
+CREATE TABLE EMPLOYEE (
+    EMPNO VARCHAR(10) PRIMARY KEY,
+    EMPNAME VARCHAR(255)
+);
+
+-- Create ASSIGNED table
+CREATE TABLE ASSIGNED (
+    PNO VARCHAR(10),
+    EMPNO VARCHAR(10),
+    FOREIGN KEY (PNO) REFERENCES PROJECT(PNO),
+    FOREIGN KEY (EMPNO) REFERENCES EMPLOYEE(EMPNO),
+    PRIMARY KEY (PNO, EMPNO)
+);
+
+-- Insert sample data into PROJECT table
+INSERT INTO PROJECT (PNO, PNAME, CHIEF)
+VALUES 
+    ('pr001', 'Project A', 'John'),
+    ('pr002', 'Project B', 'Alice'),
+    ('pr003', 'DBMS', 'Bob');
+
+-- Insert sample data into EMPLOYEE table
+INSERT INTO EMPLOYEE (EMPNO, EMPNAME)
+VALUES 
+    ('emp001', 'Tom'),
+    ('emp002', 'Jerry'),
+    ('emp003', 'Lisa'),
+    ('emp004', 'Michael');
+
+-- Insert sample data into ASSIGNED table
+INSERT INTO ASSIGNED (PNO, EMPNO)
+VALUES 
+    ('pr001', 'emp001'),
+    ('pr001', 'emp002'),
+    ('pr002', 'emp002'),
+    ('pr003', 'emp003'),
+    ('pr003', 'emp004');
+
+-- A. Get count of employees working on each project.
+SELECT PNO, PNAME, COUNT(EMPNO) AS Employees_Working
+FROM ASSIGNED
+JOIN PROJECT ON ASSIGNED.PNO = PROJECT.PNO
+GROUP BY PNO, PNAME;
+
+-- B. Get details of employees working on project pr002.
+SELECT EMPLOYEE.EMPNO, EMPNAME
+FROM EMPLOYEE
+JOIN ASSIGNED ON EMPLOYEE.EMPNO = ASSIGNED.EMPNO
+WHERE PNO = 'pr002';
+
+-- C. Get details of employees working on project DBMS.
+SELECT EMPLOYEE.EMPNO, EMPNAME
+FROM EMPLOYEE
+JOIN ASSIGNED ON EMPLOYEE.EMPNO = ASSIGNED.EMPNO
+JOIN PROJECT ON ASSIGNED.PNO = PROJECT.PNO
+WHERE PNAME = 'DBMS';
