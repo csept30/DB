@@ -1,0 +1,27 @@
+[14] Write a database trigger on Library table. The System should keep track of the records that are being
+updated or deleted. The old value of updated or deleted records should be added in Library_Audit table.
+
+-- Create Library_Audit table
+CREATE TABLE Library_Audit (
+    action VARCHAR(10), -- Action performed: 'UPDATE' or 'DELETE'
+    book_id INT,
+    book_title VARCHAR(255),
+    author VARCHAR(255),
+    old_status VARCHAR(50), -- Old status of the book before the update or delete
+    audit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create trigger on Library table
+CREATE OR REPLACE TRIGGER Library_Trigger
+BEFORE UPDATE OR DELETE ON Library
+FOR EACH ROW
+BEGIN
+    IF UPDATING THEN
+        INSERT INTO Library_Audit (action, book_id, book_title, author, old_status)
+        VALUES ('UPDATE', :OLD.book_id, :OLD.book_title, :OLD.author, :OLD.status);
+    ELSIF DELETING THEN
+        INSERT INTO Library_Audit (action, book_id, book_title, author, old_status)
+        VALUES ('DELETE', :OLD.book_id, :OLD.book_title, :OLD.author, :OLD.status);
+    END IF;
+END;
+/
