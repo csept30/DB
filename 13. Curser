@@ -1,0 +1,52 @@
+[13] Write PL/SQL block to implement Curser to calculate grade of minimum 10 students.
+
+-- Create student_table
+CREATE TABLE student_table (
+    student_id INT PRIMARY KEY,
+    marks INT
+);
+
+-- Insert sample data into student_table
+INSERT INTO student_table (student_id, marks) VALUES
+    (1, 85),
+    (2, 92),
+    (3, 75),
+    (4, 68),
+    (5, 78),
+    (6, 95),
+    (7, 83),
+    (8, 70),
+    (9, 88),
+    (10, 72),
+    (11, 90),
+    (12, 60),
+    (13, 55);
+
+-- PL/SQL block to calculate grades for students
+DECLARE
+    CURSOR student_cursor IS
+        SELECT student_id, marks FROM student_table WHERE ROWNUM <= 10;
+    v_student_id student_table.student_id%TYPE;
+    v_marks student_table.marks%TYPE;
+    v_grade VARCHAR2(2);
+BEGIN
+    FOR student_rec IN student_cursor LOOP
+        v_student_id := student_rec.student_id;
+        v_marks := student_rec.marks;
+        
+        IF v_marks >= 90 THEN
+            v_grade := 'A+';
+        ELSIF v_marks >= 80 THEN
+            v_grade := 'A';
+        ELSIF v_marks >= 70 THEN
+            v_grade := 'B';
+        ELSIF v_marks >= 60 THEN
+            v_grade := 'C';
+        ELSE
+            v_grade := 'D';
+        END IF;
+        
+        DBMS_OUTPUT.PUT_LINE('Student ID: ' || v_student_id || ', Marks: ' || v_marks || ', Grade: ' || v_grade);
+    END LOOP;
+END;
+/
