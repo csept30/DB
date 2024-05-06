@@ -1,0 +1,41 @@
+[12]Design the DB for ”Pets” and perform following operations:
+Pet(pet_name,owner,sex,birth_date,death_date)
+2) Display all the pets information.
+
+3)Display all pets in ascending and descending order according to birth date. 4) Display
+the pet information of specific owner.
+5) count the pet which have same birth_date
+
+-- Create Pet table
+CREATE TABLE Pet (
+    pet_name VARCHAR(255) PRIMARY KEY,
+    owner VARCHAR(255),
+    sex CHAR(1),
+    birth_date DATE,
+    death_date DATE
+);
+
+-- Insert sample data into Pet table
+INSERT INTO Pet (pet_name, owner, sex, birth_date, death_date)
+VALUES
+    ('Buddy', 'John', 'M', '2018-05-10', NULL),
+    ('Fluffy', 'Jane', 'F', '2019-07-15', NULL),
+    ('Max', 'Alice', 'M', '2017-10-20', '2023-03-12'),
+    ('Luna', 'Bob', 'F', '2020-01-30', NULL);
+
+-- 2. Display all the pets information.
+SELECT * FROM Pet;
+
+-- 3. Display all pets in ascending order according to birth date.
+SELECT * FROM Pet ORDER BY birth_date ASC;
+
+-- Display all pets in descending order according to birth date.
+SELECT * FROM Pet ORDER BY birth_date DESC;
+
+-- 4. Display the pet information of a specific owner.
+SELECT * FROM Pet WHERE owner = 'John';
+
+-- 5. Count the pets which have the same birth_date.
+SELECT birth_date, COUNT(*) AS count_same_birthdate
+FROM Pet
+GROUP BY birth_date;
