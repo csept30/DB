@@ -44,4 +44,4 @@ SET @class := '';
 CALL proc_Grade(@name, @total_marks, @class);
 
 INSERT INTO Result (Name, Class) VALUES (@name, @class);
-select * from result
+select * from result;
