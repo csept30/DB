@@ -5,47 +5,43 @@ Second Class. Write a PL/SQL block for using procedure created with above requir
 Stud_Marks(name, total_marks)
 Result(Roll,Name, Class)
 
--- Create the procedure proc_Grade
-CREATE OR REPLACE PROCEDURE proc_Grade (
-    p_name IN VARCHAR2,
-    p_total_marks IN NUMBER,
-    p_class OUT VARCHAR2
+DELIMITER //
+
+-- Create Result table to store marks arranged by class
+CREATE TABLE IF NOT EXISTS Result (
+    Roll INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255),
+    Class VARCHAR(255)
+);
+
+DELIMITER ;
+
+DELIMITER //
+
+-- Create proc_Grade procedure
+CREATE PROCEDURE proc_Grade(
+    in_name VARCHAR(255),
+    in_total_marks INT,
+    OUT out_class VARCHAR(255)
 )
-IS
 BEGIN
-    IF p_total_marks >= 990 THEN
-        p_class := 'Distinction';
-    ELSIF p_total_marks >= 900 AND p_total_marks <= 989 THEN
-        p_class := 'First Class';
-    ELSIF p_total_marks >= 825 AND p_total_marks <= 899 THEN
-        p_class := 'Higher Second Class';
+    IF in_total_marks >= 990 THEN
+        SET out_class = 'Distinction';
+    ELSEIF in_total_marks BETWEEN 900 AND 989 THEN
+        SET out_class = 'First Class';
+    ELSEIF in_total_marks BETWEEN 825 AND 899 THEN
+        SET out_class = 'Higher Second Class';
     ELSE
-        p_class := 'Pass';
+        SET out_class = 'Not Classified';
     END IF;
-END;
-/
+END//
 
--- PL/SQL block to use the procedure
-DECLARE
-    v_name Stud_Marks.name%TYPE;
-    v_total_marks Stud_Marks.total_marks%TYPE;
-    v_class Result.Class%TYPE;
-BEGIN
-    -- Assuming you have a table Stud_Marks with columns name and total_marks
-    -- and a table Result with columns Roll, Name, and Class
+DELIMITER ;
+SET @name := 'John';
+SET @total_marks := 950;
+SET @class := '';
 
-    -- Fetching student details
-    SELECT name, total_marks INTO v_name, v_total_marks
-    FROM Stud_Marks
-    WHERE ROWNUM <= 1; -- Assuming you have multiple records, limit to 1 for demonstration
+CALL proc_Grade(@name, @total_marks, @class);
 
-    -- Calling the procedure proc_Grade
-    proc_Grade(v_name, v_total_marks, v_class);
-
-    -- Inserting the result into the Result table
-    INSERT INTO Result (Roll, Name, Class)
-    VALUES (1, v_name, v_class);
-
-    COMMIT; -- Commit the transaction
-END;
-/
+INSERT INTO Result (Name, Class) VALUES (@name, @class);
+select * from result
