@@ -54,10 +54,9 @@ UPDATE BOOK SET Book_Copy = 10 WHERE Publisher_Name = 'Tata MacGraw Hill';
 
 SELECT Publisher_Name FROM BOOK GROUP BY Publisher_Name ORDER BY COUNT(*) DESC LIMIT 1;
 
-SELECT Publisher_Name, COUNT(*) AS Books_Published
-FROM BOOK
+SELECT Publisher_Name FROM BOOK
 GROUP BY Publisher_Name
-ORDER BY Books_Published ASC;
+ORDER BY COUNT(*) ASC;
 
 SELECT *
 FROM BOOK
