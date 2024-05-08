@@ -1,0 +1,61 @@
+-- Create table lib to store book information
+CREATE TABLE lib (
+    book_id INT,
+    book_name VARCHAR(255)
+);
+
+-- Create table library_audit to track changes in lib table
+CREATE TABLE library_audit (
+    action VARCHAR(20),
+    book_id INT,
+    book_name VARCHAR(255),
+    status VARCHAR(20),
+    DATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert a record into the lib table
+INSERT INTO lib (book_id, book_name)
+VALUES (101, 'LEARN DBMS');
+
+-- Create a trigger to capture updates in the lib table
+DELIMITER //
+CREATE TRIGGER myTrigger
+AFTER UPDATE ON lib
+FOR EACH ROW
+BEGIN
+    INSERT INTO library_audit (action, book_id, book_name, status)
+    VALUES ('UPDATE', OLD.book_id, OLD.book_name, 'INSERTED');
+END//
+DELIMITER ;
+
+-- Create a trigger to capture deletions in the lib table
+DELIMITER //
+CREATE TRIGGER myTrigger1
+AFTER DELETE ON lib
+FOR EACH ROW
+BEGIN
+    INSERT INTO library_audit (action, book_id, book_name, status)
+    VALUES ('DELETE', OLD.book_id, OLD.book_name, 'INSERTED');
+END//
+DELIMITER ;
+
+-- Update a record in the lib table
+UPDATE lib
+SET book_id = 102
+WHERE book_name = 'LEARN DBMS';
+
+-- Display all records from the lib table
+SELECT * FROM lib;
+
+-- Display all records from the library_audit table
+SELECT * FROM library_audit;
+
+-- Delete a record from the lib table
+DELETE FROM lib
+WHERE book_id = 102;
+
+-- Display all records from the lib table after deletion
+SELECT * FROM lib;
+
+-- Display all records from the library_audit table after deletion
+SELECT * FROM library_audit;
