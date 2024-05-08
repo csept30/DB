@@ -53,16 +53,21 @@ VALUES
     ('pr003', 'emp004');
 
 -- A. Get count of employees working on each project.
-SELECT PNO, PNAME, COUNT(EMPNO) AS Employees_Working
+SELECT (*)
 FROM ASSIGNED
-JOIN PROJECT ON ASSIGNED.PNO = PROJECT.PNO
-GROUP BY PNO, PNAME;
+INNER JOIN EMPLOYEE ON ASSIGNED.EMPO = EMPLOYEE.EMPNO
+INNER JOIN PROJECT ON ASSIGNED.PNO = PROJECT.PNO;
 
 -- B. Get details of employees working on project pr002.
 SELECT EMPLOYEE.EMPNO, EMPNAME
 FROM EMPLOYEE
 JOIN ASSIGNED ON EMPLOYEE.EMPNO = ASSIGNED.EMPNO
 WHERE PNO = 'pr002';
+              OR
+select * from assigned
+inner join employee on assigned.empno=employee.empno
+inner join project on assigned.pno=project.pno
+where project.pno='pr002';
 
 -- C. Get details of employees working on project DBMS.
 SELECT EMPLOYEE.EMPNO, EMPNAME
@@ -70,3 +75,8 @@ FROM EMPLOYEE
 JOIN ASSIGNED ON EMPLOYEE.EMPNO = ASSIGNED.EMPNO
 JOIN PROJECT ON ASSIGNED.PNO = PROJECT.PNO
 WHERE PNAME = 'DBMS';
+               OR
+select * from assigned
+inner join employee on assigned.empno=employee.empno
+inner join project on assigned.pno=project.pno
+where project.pname='dbms';
