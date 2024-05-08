@@ -91,7 +91,10 @@ FROM Course
 INNER JOIN Batch ON Course.coursecode = Batch.coursecode;
 
 -- 4. Find out coursename with coursefees greater than 50000
-SELECT coursename FROM Course WHERE coursefees > 50000;
+SELECT coursename 
+FROM Course 
+INNER JOIN Course ON Course.coursecode = Batch.coursecode
+WHERE coursefees > 50000;
 
 -- 5. Display the details of batch having a specified coursename
 SELECT Batch.*
