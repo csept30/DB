@@ -1,0 +1,65 @@
+CREATE TABLE students (
+    student_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_name VARCHAR(100),
+    marks_obtained INT
+);
+
+INSERT INTO students (student_name, marks_obtained) VALUES
+('John Doe', 85),
+('Jane Smith', 70),
+('Michael Johnson', 92),
+('Emily Brown', 78),
+('David Wilson', 60),
+('Sarah Lee', 88),
+('Robert Jones', 73),
+('Emma Davis', 95),
+('Daniel Martinez', 68),
+('Olivia Taylor', 82);
+
+DELIMITER $$
+
+CREATE PROCEDURE CalculateGrades()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_student_id INT;
+    DECLARE v_student_name VARCHAR(100);
+    DECLARE v_marks_obtained INT;
+    DECLARE v_grade VARCHAR(2);
+
+    DECLARE student_cursor CURSOR FOR
+        SELECT student_id, student_name, marks_obtained
+        FROM students
+        LIMIT 10;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN student_cursor;
+
+    read_loop: LOOP
+        FETCH student_cursor INTO v_student_id, v_student_name, v_marks_obtained;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        IF v_marks_obtained >= 90 THEN
+            SET v_grade = 'A+';
+        ELSEIF v_marks_obtained >= 80 THEN
+            SET v_grade = 'A';
+        ELSEIF v_marks_obtained >= 70 THEN
+            SET v_grade = 'B';
+        ELSEIF v_marks_obtained >= 60 THEN
+            SET v_grade = 'C';
+        ELSE
+            SET v_grade = 'D';
+        END IF;
+
+        SELECT CONCAT('Student ID: ', v_student_id, ', Student Name: ', v_student_name, ', Grade: ', v_grade);
+
+    END LOOP;
+
+    CLOSE student_cursor;
+
+END$$
+
+DELIMITER ;
+CALL CalculateGrades();
