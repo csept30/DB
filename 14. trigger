@@ -1,27 +1,60 @@
 [14] Write a database trigger on Library table. The System should keep track of the records that are being
 updated or deleted. The old value of updated or deleted records should be added in Library_Audit table.
 
--- Create Library_Audit table
-CREATE TABLE Library_Audit (
-    action VARCHAR(10), -- Action performed: 'UPDATE' or 'DELETE'
-    book_id INT,
-    book_title VARCHAR(255),
-    author VARCHAR(255),
-    old_status VARCHAR(50), -- Old status of the book before the update or delete
-    audit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Create the Library table
+CREATE TABLE IF NOT EXISTS Library (
+    Book_ISBN VARCHAR(255) PRIMARY KEY,
+    Title VARCHAR(255),
+    Author VARCHAR(255),
+    Publisher_Name VARCHAR(255),
+    Price DECIMAL(10, 2),
+    Date_Of_Publication DATE,
+    Book_Copy INT
 );
 
--- Create trigger on Library table
-CREATE OR REPLACE TRIGGER Library_Trigger
-BEFORE UPDATE OR DELETE ON Library
+-- Create the Library_Audit table
+CREATE TABLE IF NOT EXISTS Library_Audit (
+    Audit_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Action VARCHAR(10) NOT NULL,
+    Book_ISBN VARCHAR(255),
+    Old_Title VARCHAR(255),
+    Old_Publisher_Name VARCHAR(255),
+    Old_Price DECIMAL(10,2),
+    Old_Date_Of_Publication DATE,
+    Old_Book_Copy INT,
+    Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create the trigger
+DELIMITER //
+
+CREATE TRIGGER library_audit_trigger
+AFTER UPDATE ON Library
 FOR EACH ROW
 BEGIN
-    IF UPDATING THEN
-        INSERT INTO Library_Audit (action, book_id, book_title, author, old_status)
-        VALUES ('UPDATE', :OLD.book_id, :OLD.book_title, :OLD.author, :OLD.status);
-    ELSIF DELETING THEN
-        INSERT INTO Library_Audit (action, book_id, book_title, author, old_status)
-        VALUES ('DELETE', :OLD.book_id, :OLD.book_title, :OLD.author, :OLD.status);
-    END IF;
-END;
-/
+    INSERT INTO Library_Audit (Action, Book_ISBN, Old_Title, Old_Publisher_Name, Old_Price, Old_Date_Of_Publication, Old_Book_Copy)
+    VALUES ('UPDATE', OLD.Book_ISBN, OLD.Title, OLD.Publisher_Name, OLD.Price, OLD.Date_Of_Publication, OLD.Book_Copy);
+END//
+
+DELIMITER ;
+
+-- Insert values into the Library table
+INSERT INTO Library (Book_ISBN, Title, Author, Publisher_Name, Price, Date_Of_Publication, Book_Copy)
+VALUES 
+    ('9780133594140', 'Database Systems: The Complete Book', 'Hector Garcia-Molina', 'Pearson', 100.00, '2022-01-01', 5),
+    ('9780134780976', 'Introduction to Algorithms', 'Thomas H. Cormen', 'MIT Press', 80.00, '2021-03-15', 10);
+
+-- Update a record in the Library table
+UPDATE Library
+SET Price = 110.00
+WHERE Book_ISBN = '9780133594140';
+
+-- Delete a record from the Library table
+DELETE FROM Library
+WHERE Book_ISBN = '9780133594140';
+
+-- Select all records from the Library table
+SELECT * FROM Library;
+
+-- Select all records from the Library_Audit table
+SELECT * FROM Library_Audit;
